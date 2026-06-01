@@ -753,6 +753,28 @@
             setInterval(() => {
                 document.getElementById('scanInput').focus();
             }, 5000);
+            setInterval(checkAutoExport, 60000); // Check auto export every minute
+        }
+
+        function checkAutoExport() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            // Format DD-MM-YYYY
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const dateStr = day + '-' + month + '-' + year;
+            
+            const lastExportDate = localStorage.getItem('lastAutoExportDate_en');
+
+            // After 18:15
+            if (hours > 18 || (hours === 18 && minutes >= 15)) {
+                if (lastExportDate !== dateStr) {
+                    exportToExcel(true); // Pass true to indicate it's auto export
+                    localStorage.setItem('lastAutoExportDate_en', dateStr);
+                }
+            }
         }
 
         function toggleFullscreen() {
@@ -1113,14 +1135,17 @@
             }
         }
 
-         function exportToExcel() {
+         function exportToExcel(isAuto = false) {
              if (scanRecords.length === 0) {
-                 alert('No data to export!');
+                 if (!isAuto) alert('No data to export!');
                  return;
              }
 
              const now = new Date();
-             const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+             const day = String(now.getDate()).padStart(2, '0');
+             const month = String(now.getMonth() + 1).padStart(2, '0');
+             const year = now.getFullYear();
+             const dateStr = day + '-' + month + '-' + year;
              
              let csv = '\uFEFF';
              csv += 'No.,Scanned Content,Carrier,Case Type,Scan Time,Date\n';
@@ -1141,7 +1166,18 @@
              link.click();
              document.body.removeChild(link);
 
-             alert('Export Successful!\nFile Name: ScanRecord_' + dateStr + '.csv\n\nTip: Open CSV file with Excel');
+             if (!isAuto) {
+                 alert('Export Successful!\nFile Name: ScanRecord_' + dateStr + '.csv\n\nTip: Open CSV file with Excel');
+             } else {
+                 const display = document.getElementById('scanDisplay');
+                 const originalText = display.textContent;
+                 display.textContent = 'Auto Exported';
+                 display.style.color = '#00ff00';
+                 setTimeout(() => {
+                     display.textContent = originalText;
+                     display.style.color = '#ffffff';
+                 }, 3000);
+             }
          }
 
         function clearRecords() {
