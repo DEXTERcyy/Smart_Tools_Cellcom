@@ -15,7 +15,7 @@
             font-family: "Arial", sans-serif;
             background: #000000;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px; /* Reduced from 20px */
         }
 
         .container {
@@ -24,22 +24,15 @@
             background: #000000;
             border: 3px solid #ffffff;
             border-radius: 10px;
-            padding: 30px;
+            padding: 20px; /* Reduced from 30px */
         }
 
         h1 {
-            text-align: center;
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-size: 24px;
-            font-weight: bold;
+            display: none;
         }
 
         .date-info {
-            text-align: center;
             color: #cccccc;
-            font-size: 20px;
-            margin-bottom: 30px;
         }
 
         .current-scan {
@@ -180,7 +173,7 @@
             background: #1a1a1a;
             border: 2px solid #ffffff;
             color: #ffffff;
-            padding: 20px;
+            padding: 10px 15px; /* Reduced padding top/bottom from 20px to 10px */
             border-radius: 10px;
             text-align: center;
             min-width: 200px;
@@ -190,8 +183,8 @@
         .stat-sub {
             display: flex;
             justify-content: space-around;
-            margin-top: 10px;
-            padding-top: 10px;
+            margin-top: 5px; /* Reduced from 10px */
+            padding-top: 5px; /* Reduced from 10px */
             border-top: 1px solid #333;
         }
 
@@ -201,25 +194,26 @@
         }
 
         .stat-sub-item span.label {
-            font-size: 18px;
+            font-size: 14px; /* Reduced from 18px */
             color: #cccccc;
-            margin-bottom: 5px;
+            margin-bottom: 2px; /* Reduced from 5px */
         }
 
         .stat-sub-item span.value {
-            font-size: 48px;
+            font-size: 32px; /* Reduced from 48px */
             font-weight: bold;
             color: #00ff00;
         }
 
         .stat-box h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 16px; /* Reduced from 18px */
+            margin-bottom: 5px; /* Reduced from 10px */
             color: #cccccc;
         }
 
         .stat-box p {
-            font-size: 48px;
+            font-size: 38px; /* Reduced from 48px */
+            margin-bottom: 0;
             font-weight: bold;
             color: #00ff00;
         }
@@ -290,8 +284,12 @@
 
         .history h2 {
             color: #ffffff;
-            margin-bottom: 15px;
             font-size: 28px;
+        }
+
+        #historySearchInput:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
         .table-container {
@@ -433,7 +431,12 @@
             position: relative;
         }
 
-        .fullscreen-mode h1,
+        .fullscreen-mode .top-layout {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .fullscreen-mode .expedite-right,
         .fullscreen-mode .date-info,
         .fullscreen-mode .stats,
         .fullscreen-mode .buttons,
@@ -507,9 +510,6 @@
                 padding: 8px;
                 font-size: 12px;
             }
-            h1 {
-                font-size: 28px;
-            }
             .case-type-display {
                 font-size: 24px;
             }
@@ -518,30 +518,40 @@
 </head>
 <body>
     <div class="container">
-        <h1>Barcode Scanner Recording System</h1>
-        <div class="date-info" id="currentDate"></div>
+        <div class="top-layout" style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; align-items: stretch;">
+            <div class="main-left" style="flex: 4; min-width: 60%; display: flex; flex-direction: column;">
+                <div class="current-scan" style="margin-bottom: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                    <div class="date-info" id="currentDate" style="position: absolute; top: 15px; right: 20px; font-size: 16px; margin-bottom: 0;"></div>
+                    <h2>Current Scan</h2>
+                    <div class="scan-display" id="scanDisplay">Waiting for scan...</div>
+                    <div class="case-type-display" id="caseTypeDisplay">
+                        <span class="display-tag" id="displayCarrier" style="display: none;" onclick="editCurrentCarrier()">Carrier</span>
+                        <span class="display-tag" id="displayCaseType" onclick="editCurrentCaseType()">Case Type: Repair</span>
+                    </div>
+                    <div class="scan-status" id="scanStatus">Ready | Please scan barcode with scanner</div>
+                </div>
 
-        <div class="current-scan">
-            <h2>Current Scan</h2>
-            <div class="scan-display" id="scanDisplay">Waiting for scan...</div>
-            <div class="case-type-display" id="caseTypeDisplay">
-                <span class="display-tag" id="displayCarrier" style="display: none;" onclick="editCurrentCarrier()">Carrier</span>
-                <span class="display-tag" id="displayCaseType" onclick="editCurrentCaseType()">Case Type: Repair</span>
+                <div class="input-section" style="margin-bottom: 0;">
+                    <input type="text" class="scan-input" id="scanInput" placeholder="Scanner Input (Auto Focus)" autofocus>
+                    <select class="case-type-select" id="caseTypeSelect">
+                        <option value="Repair" selected>Repair</option>
+                        <option value="DOA">DOA</option>
+                        <option value="ExpressRefresh">Express Refresh</option>
+                        <option value="Return">Return</option>
+                    </select>
+                    <div class="toggle-container">
+                        <div class="toggle-btn active" id="toggleDefault" onclick="setMode('Default')">Default</div>
+                        <div class="toggle-btn" id="toggleManual" onclick="setMode('Manual')">Manual</div>
+                    </div>
+                </div>
             </div>
-            <div class="scan-status" id="scanStatus">Ready | Please scan barcode with scanner</div>
-        </div>
 
-        <div class="input-section">
-            <input type="text" class="scan-input" id="scanInput" placeholder="Scanner Input (Auto Focus)" autofocus>
-            <select class="case-type-select" id="caseTypeSelect">
-                <option value="Repair" selected>Repair</option>
-                <option value="DOA">DOA</option>
-                <option value="ExpressRefresh">Express Refresh</option>
-                <option value="Return">Return</option>
-            </select>
-            <div class="toggle-container">
-                <div class="toggle-btn active" id="toggleDefault" onclick="setMode('Default')">Default</div>
-                <div class="toggle-btn" id="toggleManual" onclick="setMode('Manual')">Manual</div>
+            <div class="expedite-right" style="flex: 1; min-width: 250px; max-width: 320px; background: #1a1a1a; border: 3px solid #ff3333; border-radius: 10px; padding: 15px; display: flex; flex-direction: column;">
+                <h2 style="color: #ff3333; text-align: center; margin-bottom: 10px; font-size: 20px;">EXPEDITE LIST</h2>
+                <input type="text" id="expediteInput" style="padding: 8px; font-size: 14px; border: 2px solid #ff3333; border-radius: 5px; background: #000; color: #fff; outline: none; margin-bottom: 10px; width: 100%;" placeholder="Add Tracking No. (Enter)">
+                <div id="expediteList" style="flex: 1; overflow-y: auto;">
+                    <!-- Expedite items will be injected here -->
+                </div>
             </div>
         </div>
 
@@ -607,6 +617,16 @@
                         <span class="value" id="weekDealerCount">0</span>
                     </div>
                 </div>
+                <div class="stat-sub">
+                    <div class="stat-sub-item">
+                        <span class="label">Repair</span>
+                        <span class="value" id="weekRepairCount" style="color:#3498db">0</span>
+                    </div>
+                    <div class="stat-sub-item">
+                        <span class="label">Return</span>
+                        <span class="value" id="weekReturnCount" style="color:#f39c12">0</span>
+                    </div>
+                </div>
             </div>
             <div class="stat-box" style="min-width: 300px;">
                 <h3>Last Week's Scans</h3>
@@ -621,6 +641,16 @@
                         <span class="value" id="lastWeekDealerCount">0</span>
                     </div>
                 </div>
+                <div class="stat-sub">
+                    <div class="stat-sub-item">
+                        <span class="label">Repair</span>
+                        <span class="value" id="lastWeekRepairCount" style="color:#3498db">0</span>
+                    </div>
+                    <div class="stat-sub-item">
+                        <span class="label">Return</span>
+                        <span class="value" id="lastWeekReturnCount" style="color:#f39c12">0</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -632,7 +662,10 @@
         </div>
 
         <div class="history">
-            <h2>Scan History</h2>
+            <div style="display: flex; justify-content: flex-start; align-items: center; gap: 20px; margin-bottom: 15px;">
+                <h2 style="margin-bottom: 0;">Scan History</h2>
+                <input type="text" id="historySearchInput" placeholder="Search Shipping Nr..." style="padding: 8px 15px; font-size: 16px; border: 2px solid #fff; border-radius: 5px; background: #1a1a1a; color: #fff; width: 300px; outline: none;">
+            </div>
             <div class="table-container">
                 <table id="historyTable">
                     <thead>
@@ -666,6 +699,7 @@
          let currentCaseType = '';
          let isFullscreen = false;
          let inputMode = 'Default';
+         let expediteRecords = [];
 
          function setMode(mode) {
              inputMode = mode;
@@ -717,6 +751,7 @@
          function init() {
             updateDate();
             loadRecords();
+            loadExpediteRecords();
             updateStats();
             updateHistory();
             
@@ -737,6 +772,25 @@
                 }
             });
 
+            document.getElementById('expediteInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const barcode = this.value.trim();
+                    if (barcode) {
+                        addExpediteRecord(barcode);
+                        this.value = '';
+                    }
+                    document.getElementById('scanInput').focus();
+                }
+            });
+
+            document.getElementById('historySearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    updateHistory(this.value.trim().toLowerCase());
+                    this.value = '';
+                    document.getElementById('scanInput').focus();
+                }
+            });
+
             document.getElementById('caseTypeSelect').addEventListener('change', function() {
                 currentCaseType = this.value;
                 updateCaseTypeDisplay(currentCaseType);
@@ -751,7 +805,11 @@
 
             setInterval(updateDate, 1000);
             setInterval(() => {
-                document.getElementById('scanInput').focus();
+                // Only auto-focus scanInput if user is not typing in other inputs
+                const activeId = document.activeElement ? document.activeElement.id : '';
+                if (activeId !== 'expediteInput' && activeId !== 'historySearchInput') {
+                    document.getElementById('scanInput').focus();
+                }
             }, 5000);
             setInterval(checkAutoExport, 60000); // Check auto export every minute
         }
@@ -793,7 +851,7 @@
             }
         }
 
-        function updateCaseTypeDisplay(caseType) {
+         function updateCaseTypeDisplay(caseType) {
             const display = document.getElementById('displayCaseType');
             if (caseType) {
                 display.textContent = 'Case Type: ' + caseType;
@@ -876,9 +934,23 @@
 
              const display = document.getElementById('scanDisplay');
              display.textContent = barcode;
-             display.style.color = '#ffffff';
-             display.classList.add('flash');
-             setTimeout(() => display.classList.remove('flash'), 500);
+             
+             let isExpedite = expediteRecords.some(record => record.barcode === barcode);
+
+             if (isExpedite) {
+                 display.textContent = barcode + ' (EXPEDITE!)';
+                 display.style.color = '#ff3333';
+                 display.style.background = '#330000';
+                 setTimeout(() => {
+                     display.style.color = '#ffffff';
+                     display.style.background = 'transparent';
+                     display.textContent = barcode;
+                 }, 3000);
+             } else {
+                 display.style.color = '#ffffff';
+                 display.classList.add('flash');
+                 setTimeout(() => display.classList.remove('flash'), 500);
+             }
 
              const carrierDisplay = document.getElementById('displayCarrier');
              carrierDisplay.textContent = 'Carrier: ' + detectedCarrier;
@@ -887,7 +959,13 @@
              updateCaseTypeDisplay(finalCaseType);
 
              document.getElementById('scanStatus').textContent = 
-                 'Scan Successful | Time: ' + timeStr;
+                 (isExpedite ? 'EXPEDITE PACKAGE MATCHED! | ' : '') + 'Scan Successful | Time: ' + timeStr;
+             if (isExpedite) {
+                 document.getElementById('scanStatus').style.color = '#ff3333';
+                 setTimeout(() => {
+                     document.getElementById('scanStatus').style.color = '#00ff00';
+                 }, 3000);
+             }
 
              updateStats();
              updateHistory();
@@ -920,8 +998,12 @@
             let yesterdayReturnCount = 0;
             let weekCount = 0;
             let weekDealerCount = 0;
+            let weekRepairCount = 0;
+            let weekReturnCount = 0;
             let lastWeekCount = 0;
             let lastWeekDealerCount = 0;
+            let lastWeekRepairCount = 0;
+            let lastWeekReturnCount = 0;
 
             scanRecords.forEach(record => {
                 const recordDate = new Date(record.timestamp);
@@ -959,12 +1041,24 @@
                     if (isPostNL) {
                         weekDealerCount++;
                     }
+                    if (record.caseType === 'Repair') {
+                        weekRepairCount++;
+                    }
+                    if (record.caseType === 'Return') {
+                        weekReturnCount++;
+                    }
                 }
 
                 if (recordDate >= lastWeekStart && recordDate < lastWeekEnd) {
                     lastWeekCount++;
                     if (isPostNL) {
                         lastWeekDealerCount++;
+                    }
+                    if (record.caseType === 'Repair') {
+                        lastWeekRepairCount++;
+                    }
+                    if (record.caseType === 'Return') {
+                        lastWeekReturnCount++;
                     }
                 }
             });
@@ -989,37 +1083,63 @@
             document.getElementById('weekCount').textContent = weekCount;
             document.getElementById('weekEndUserCount').textContent = weekEndUserCount;
             document.getElementById('weekDealerCount').textContent = weekDealerCount;
+            document.getElementById('weekRepairCount').textContent = weekRepairCount;
+            document.getElementById('weekReturnCount').textContent = weekReturnCount;
 
             document.getElementById('lastWeekCount').textContent = lastWeekCount;
             document.getElementById('lastWeekEndUserCount').textContent = lastWeekEndUserCount;
             document.getElementById('lastWeekDealerCount').textContent = lastWeekDealerCount;
+            document.getElementById('lastWeekRepairCount').textContent = lastWeekRepairCount;
+            document.getElementById('lastWeekReturnCount').textContent = lastWeekReturnCount;
         }
 
-         function updateHistory() {
+         function updateHistory(searchQuery = '') {
              const tbody = document.getElementById('historyBody');
              
-             if (scanRecords.length === 0) {
-                 tbody.innerHTML = '<tr><td colspan="7" class="no-data">No scan records</td></tr>';
+             let recordsToDisplay = scanRecords;
+             
+             if (searchQuery) {
+                 recordsToDisplay = scanRecords.filter(record => 
+                     record.content.toLowerCase().includes(searchQuery)
+                 );
+             }
+             
+             if (recordsToDisplay.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="7" class="no-data">No scan records found</td></tr>';
                  return;
              }
 
-             tbody.innerHTML = scanRecords.map(function(record, index) {
+             // Performance optimization: Limit history display to top 150 records
+             const limit = 150;
+             const isTruncated = recordsToDisplay.length > limit;
+             const displayList = recordsToDisplay.slice(0, limit);
+
+             let html = displayList.map(function(record) {
+                 // We need to find the original index in scanRecords for editing/deleting to work correctly
+                 const originalIndex = scanRecords.findIndex(r => r.timestamp === record.timestamp);
+                 
                  var caseTypeClass = 'case-type-tag case-type-' + record.caseType;
-                 var caseTypeHtml = '<span class="' + caseTypeClass + '" onclick="editCaseType(' + index + ')">' + record.caseType + '</span>';
+                 var caseTypeHtml = '<span class="' + caseTypeClass + '" onclick="editCaseType(' + originalIndex + ')">' + record.caseType + '</span>';
                  
                  var carrierClass = 'carrier-tag carrier-' + record.carrier.replace(/ /g, '-');
-                 var carrierHtml = '<span class="' + carrierClass + '" onclick="editCarrier(' + index + ')">' + record.carrier + '</span>';
+                 var carrierHtml = '<span class="' + carrierClass + '" onclick="editCarrier(' + originalIndex + ')">' + record.carrier + '</span>';
                  
                  return '<tr>' +
                      '<td>' + record.index + '</td>' +
-                     '<td>' + escapeHtml(record.content) + '</td>' +
+                     '<td style="word-break: break-all;">' + escapeHtml(record.content) + '</td>' +
                      '<td>' + carrierHtml + '</td>' +
                      '<td>' + caseTypeHtml + '</td>' +
                      '<td>' + record.time + '</td>' +
                      '<td>' + record.date + '</td>' +
-                     '<td><button class="delete-btn" onclick="deleteRecord(' + index + ')">Delete</button></td>' +
+                     '<td><button class="delete-btn" onclick="deleteRecord(' + originalIndex + ')">Delete</button></td>' +
                      '</tr>';
              }).join('');
+
+             if (isTruncated) {
+                 html += '<tr><td colspan="7" style="text-align: center; padding: 15px; color: #888;">Showing the most recent ' + limit + ' records. Search to find older records.</td></tr>';
+             }
+
+             tbody.innerHTML = html;
          }
 
         function editCurrentCaseType() {
@@ -1133,6 +1253,65 @@
             if (savedIndex) {
                 currentIndex = parseInt(savedIndex);
             }
+        }
+
+        function loadExpediteRecords() {
+            const savedExpedite = localStorage.getItem('expediteRecords_en');
+            if (savedExpedite) {
+                expediteRecords = JSON.parse(savedExpedite);
+            }
+            renderExpediteList();
+        }
+
+        function saveExpediteRecords() {
+            localStorage.setItem('expediteRecords_en', JSON.stringify(expediteRecords));
+        }
+
+        function renderExpediteList() {
+            const listDiv = document.getElementById('expediteList');
+            if (expediteRecords.length === 0) {
+                listDiv.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No expedite records</div>';
+                return;
+            }
+            
+            listDiv.innerHTML = expediteRecords.map((record, index) => {
+                let carrierColor = '#999'; // Default Unknown
+                if (record.carrier === 'DHL Express') carrierColor = '#FFD700';
+                else if (record.carrier === 'DHL Parcel') carrierColor = '#FFB300';
+                else if (record.carrier === 'UPS') carrierColor = '#FFCC00';
+                else if (record.carrier === 'DPD') carrierColor = '#00CC00';
+                else if (record.carrier === 'PostNL') carrierColor = '#FF6600';
+                else if (record.carrier === 'Royal Mail') carrierColor = '#CC0000';
+                else if (record.carrier === 'FedEx') carrierColor = '#4D148C';
+                
+                let textColor = (record.carrier === 'DHL Express' || record.carrier === 'DHL Parcel' || record.carrier === 'UPS' || record.carrier === 'DPD') ? '#000' : '#fff';
+
+                return '<div style="display: grid; grid-template-columns: 1fr auto; align-items: center; background: #000; padding: 10px; margin-bottom: 8px; border: 1px solid #ff3333; border-radius: 5px; color: #fff;">' +
+                       '<div style="display: flex; flex-direction: column; gap: 5px; justify-content: center; min-width: 0; padding-right: 10px;">' +
+                           '<span style="font-weight: bold; font-family: monospace; font-size: 16px; word-break: break-all;">' + escapeHtml(record.barcode) + '</span>' +
+                           '<span style="background: ' + carrierColor + '; color: ' + textColor + '; padding: 3px 10px; border-radius: 4px; font-size: 14px; font-weight: bold; width: fit-content; text-transform: uppercase;">' + record.carrier + '</span>' +
+                       '</div>' +
+                       '<button onclick="removeExpediteRecord(' + index + ')" class="delete-btn">Delete</button>' +
+                       '</div>';
+            }).join('');
+        }
+
+        function addExpediteRecord(barcode) {
+            if (!expediteRecords.some(record => record.barcode === barcode)) {
+                let detectedCarrier = detectCarrier(barcode);
+                expediteRecords.unshift({
+                    barcode: barcode,
+                    carrier: detectedCarrier
+                });
+                saveExpediteRecords();
+                renderExpediteList();
+            }
+        }
+
+        function removeExpediteRecord(index) {
+            expediteRecords.splice(index, 1);
+            saveExpediteRecords();
+            renderExpediteList();
         }
 
          function exportToExcel(isAuto = false) {
