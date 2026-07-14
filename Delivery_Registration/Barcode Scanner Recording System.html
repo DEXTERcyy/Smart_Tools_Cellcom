@@ -375,6 +375,7 @@
         .carrier-Royal-Mail { background: #CC0000; color: white; }
         .carrier-FedEx { background: #4D148C; color: white; }
         .carrier-Unknown { background: #999999; color: white; }
+        .carrier-Others { background: #666666; color: white; }
 
         .delete-btn {
             padding: 5px 10px;
@@ -525,7 +526,7 @@
                     <h2>Current Scan</h2>
                     <div class="scan-display" id="scanDisplay">Waiting for scan...</div>
                     <div class="case-type-display" id="caseTypeDisplay">
-                        <span class="display-tag" id="displayCarrier" style="display: none;" onclick="editCurrentCarrier()">Carrier</span>
+                        <span class="display-tag" id="displayCarrier" style="display: none;" onclick="editCurrentCarrier()">Courier</span>
                         <span class="display-tag" id="displayCaseType" onclick="editCurrentCaseType()">Case Type: Repair</span>
                     </div>
                     <div class="scan-status" id="scanStatus">Ready | Please scan barcode with scanner</div>
@@ -672,7 +673,7 @@
                         <tr>
                             <th>No.</th>
                             <th>Shipping Nr.</th>
-                            <th>Carrier</th>
+                            <th>Courier</th>
                             <th>Case Type</th>
                             <th>Scan Time</th>
                             <th>Date</th>
@@ -730,23 +731,23 @@
                  return 'DPD';
              }
              
-             // PostNL: 3S / 2S + Alphanumeric (often 13+ chars total)
-             if (/^(3S|2S)[A-Z0-9]{11,}/.test(barcode)) {
-                 return 'PostNL';
-             }
-             
-             // Royal Mail: 2 Letters + 9 Digits + GB (e.g. EA123456789GB, total 13 chars)
-             if (/^[A-Z]{2}\d{9}GB$/.test(barcode)) {
-                 return 'Royal Mail';
-             }
-             
-             // FedEx: 34 digits
-             if (/^\d{34}$/.test(barcode)) {
-                 return 'FedEx';
-             }
-             
-             return 'Unknown';
-         }
+            // PostNL: 3S / 2S + Alphanumeric (often 13+ chars total)
+            if (/^(3S|2S)[A-Z0-9]{11,}/.test(barcode)) {
+                return 'PostNL';
+            }
+            
+            // Royal Mail: 2 Letters + 9 Digits + GB (e.g. EA123456789GB, total 13 chars)
+            if (/^[A-Z]{2}\d{9}GB$/.test(barcode)) {
+                return 'Royal Mail';
+            }
+            
+            // FedEx: 34 digits
+            if (/^\d{34}$/.test(barcode)) {
+                return 'FedEx';
+            }
+            
+            return 'Others';
+        }
 
          function init() {
             updateDate();
@@ -953,7 +954,7 @@
              }
 
              const carrierDisplay = document.getElementById('displayCarrier');
-             carrierDisplay.textContent = 'Carrier: ' + detectedCarrier;
+             carrierDisplay.textContent = 'Courier: ' + detectedCarrier;
              carrierDisplay.style.display = 'inline-block';
              
              updateCaseTypeDisplay(finalCaseType);
@@ -1185,11 +1186,11 @@
 
         function editCarrier(index) {
             const record = scanRecords[index];
-            const carriers = ['DHL Express', 'DHL Parcel', 'UPS', 'DPD', 'PostNL', 'Royal Mail', 'FedEx', 'Unknown'];
+            const carriers = ['DHL Express', 'DHL Parcel', 'UPS', 'DPD', 'PostNL', 'Royal Mail', 'FedEx', 'Unknown', 'Others'];
             
             let html = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000;">';
             html += '<div style="background:#1a1a1a;padding:30px;border-radius:10px;border:2px solid #fff;text-align:center;max-height:80vh;overflow-y:auto;">';
-            html += '<h3 style="color:#fff;margin-bottom:20px;">Edit Carrier</h3>';
+            html += '<h3 style="color:#fff;margin-bottom:20px;">Edit Courier</h3>';
             html += '<p style="color:#ccc;margin-bottom:15px;">Shipping Nr.: ' + record.content + '</p>';
             
             carriers.forEach(function(carrier) {
@@ -1209,7 +1210,7 @@
             updateHistory();
             if (index === 0) {
                 const carrierDisplay = document.getElementById('displayCarrier');
-                carrierDisplay.textContent = 'Carrier: ' + newCarrier;
+                carrierDisplay.textContent = 'Courier: ' + newCarrier;
             }
             closeEditDialog();
         }
@@ -1327,7 +1328,7 @@
              const dateStr = day + '-' + month + '-' + year;
              
              let csv = '\uFEFF';
-             csv += 'No.,Scanned Content,Carrier,Case Type,Scan Time,Date\n';
+             csv += 'No.,Scanned Content,Courier,Case Type,Scan Time,Date\n';
              
              scanRecords.slice().reverse().forEach(function(record) {
                  csv += record.index + ',"' + record.content + '","' + record.carrier + '","' + record.caseType + '",' + record.time + ',' + record.date + '\n';
